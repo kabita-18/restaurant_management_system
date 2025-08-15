@@ -1,0 +1,4 @@
+/.metadata/
+frontend/node_modules/
+frontend/.env
+backend/src/main/resources/application.properties
