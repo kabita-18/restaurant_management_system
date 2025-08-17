@@ -48,13 +48,14 @@ const OrderSummary = () => {
 
   const handleProceed = () => {
     console.log("Order before navigate:", order);
+    const userEmail = localStorage.getItem("email") || order.email;
     navigate("/checkout", {
       state: {
         order: {
           orderid: order.orderid,
           tprice: order.tprice,
           customerName: order.customerName,
-          email: order.email,
+          email: userEmail,
         },
       },
     });

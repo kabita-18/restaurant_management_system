@@ -17,11 +17,15 @@ import { AddOrderDetails, getAvailableMenuItems } from "../Service/service";
 import { useNavigate } from "react-router-dom";
 
 const PlaceOrder = () => {
+  const loggedEmail = localStorage.getItem("email") || "";
+  
+  console.log(loggedEmail)
+  
   const [menuItems, setMenuItems] = useState([]);
   const [quantities, setQuantities] = useState({});
   const [orderDetails, setOrderDetails] = useState({
     customerName: "",
-    email: "",
+    email: loggedEmail,
     phone: "",
     tableno: "",
     orderType: "",
@@ -91,6 +95,7 @@ const PlaceOrder = () => {
     };
 
     try {
+      const token = localStorage.getItem("token");
       const response = await AddOrderDetails(payload);
       const orderId = response;
       // const savedOrder = response; 
@@ -194,6 +199,7 @@ const PlaceOrder = () => {
                 name="customerName"
                 value={orderDetails.customerName}
                 onChange={handleInputChange}
+                
               />
             </Grid>
             <Grid item xs={12} sm={6}>
@@ -203,6 +209,7 @@ const PlaceOrder = () => {
                 name="email"
                 value={orderDetails.email}
                 onChange={handleInputChange}
+                inputProps={{readOnly:true}}
               />
             </Grid>
             <Grid item xs={12} sm={6}>
@@ -345,14 +352,23 @@ const PlaceOrder = () => {
               ✅ Confirm & Submit Order
             </Button>
             <Button
-  variant="contained"
-  color="secondary"
-  size="large"
-  onClick={() => navigate("/")}
-  sx={{ ml: 2 }}
->
-  ⬅ Back
-</Button>
+              variant="contained"
+              color="secondary"
+              size="large"
+              onClick={() => {
+              const role = localStorage.getItem("role"); 
+              if (role === "ADMIN") {
+                navigate("/ownerhome");
+              } else if (role === "MANAGER") {
+                navigate("/managerhome");
+              } else {
+                navigate("/"); 
+              }
+            }}
+              sx={{ ml: 2 }}
+            >
+              ⬅ Back
+            </Button>
           </Box>
         </Paper>
       </Box>

@@ -79,7 +79,7 @@ const SignUp = ({ open, handleClose }) => {
     email: "",
     password: "",
     repeatpassword: "",
-    role: "", 
+    role: "",
   });
 
   const handleChange = (e) => {
@@ -95,10 +95,25 @@ const SignUp = ({ open, handleClose }) => {
       return;
     }
 
-    const response = await registerUsers(formData);
-    console.log(response);
-    alert("User registered!");
-    handleClose();
+    try {
+      const user = {
+        username: formData.username,
+        email: formData.email,
+        password: formData.password,
+        role: formData.role,
+      };
+      const response = await registerUsers(user);
+      console.log("Backend response:", response);
+      if (response.success) {
+        alert(`✅${response.message}`);
+        handleClose();
+      } else {
+        alert(`❌  ${response.message}`);
+      }
+    } catch (err) {
+      console.error("Sign-up error:", err);
+      alert("❌ Error occurred during registration.");
+    }
   };
 
   return (

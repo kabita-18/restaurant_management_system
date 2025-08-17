@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Box,
@@ -11,11 +11,14 @@ import {
   Paper,
 } from "@mui/material";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
+import { getAllOrders } from "../Service/service";
 
 const ManagerHome = () => {
   const nav = useNavigate();
   const [isDropdown1Visible, setDropdown1Visibility] = useState(false);
   const [isDropdown2Visible, setDropdown2Visibility] = useState(false);
+  const [totalOrders, setTotalOrders] = useState(0);
+  const [totalRevenue, setTotalRevenue] = useState(0);
 
   const toggleDropdown1 = () => {
     setDropdown1Visibility(!isDropdown1Visible);
@@ -25,6 +28,24 @@ const ManagerHome = () => {
     setDropdown2Visibility(!isDropdown2Visible);
     setDropdown1Visibility(false);
   };
+
+  useEffect(() => {
+    const fetchOrders = async () => {
+      try {
+        const data = await getAllOrders();
+        setTotalOrders(data.length);
+        const revenue = data.reduce(
+          (sum, order) => sum + (order.tprice || 0),
+          0
+        );
+        setTotalRevenue(revenue);
+      } catch (error) {
+        console.error("Failed to fetch orders:", error);
+      }
+    };
+
+    fetchOrders();
+  }, []);
 
   return (
     <Box display="flex" height="100vh" bgcolor="#f4f6f8" overflow="hidden">
@@ -60,7 +81,10 @@ const ManagerHome = () => {
           </Button>
           {isDropdown1Visible && (
             <Box ml={2}>
-              <Button onClick={() => nav("/updatemenumanag")} sx={{ color: "white" }}>
+              <Button
+                onClick={() => nav("/updatemenuowner")}
+                sx={{ color: "white" }}
+              >
                 Update
               </Button>
             </Box>
@@ -77,17 +101,23 @@ const ManagerHome = () => {
           </Button>
           {isDropdown2Visible && (
             <Box ml={2}>
-              <Button onClick={() => nav("/vieworders")} sx={{ color: "white" }}>
+              <Button
+                onClick={() => nav("/view/orders")}
+                sx={{ color: "white" }}
+              >
                 View Orders
               </Button>
-              <Button onClick={() => nav("/submitorder")} sx={{ color: "white" }}>
+              <Button
+                onClick={() => nav("/order/addorder")}
+                sx={{ color: "white" }}
+              >
                 New Order
               </Button>
             </Box>
           )}
         </Box>
 
-        <Button sx={{ color: "white", mt: 2 }} onClick={() => nav("/viewmenu")}>
+        <Button sx={{ color: "white", mt: 2 }} onClick={() => nav("/view/menu")}>
           View Menu
         </Button>
         <Button sx={{ color: "white", mt: "auto" }} onClick={() => nav("/")}>
@@ -136,10 +166,20 @@ const ManagerHome = () => {
             <Card elevation={3}>
               <CardContent>
                 <Typography variant="h6">Quick Actions</Typography>
-                <Button fullWidth sx={{ my: 1 }} variant="outlined" onClick={() => nav("/submitorder")}>
+                <Button
+                  fullWidth
+                  sx={{ my: 1 }}
+                  variant="outlined"
+                  onClick={() => nav("/order/addorder")}
+                >
                   Create New Order
                 </Button>
-                <Button fullWidth sx={{ my: 1 }} variant="outlined" onClick={() => nav("/updatemenumanag")}>
+                <Button
+                  fullWidth
+                  sx={{ my: 1 }}
+                  variant="outlined"
+                  onClick={() => nav("/updatemenuowner")}
+                >
                   Update Menu
                 </Button>
               </CardContent>
@@ -147,30 +187,34 @@ const ManagerHome = () => {
           </Grid>
 
           {/* Revenue Summary */}
-          <Grid item xs={12} md={6}>
-            <Card elevation={3}>
-              <CardContent>
-                <Typography variant="h6">Revenue</Typography>
-                <Typography variant="h4" color="primary" fontWeight="bold">
-                  ₹1,25,000
+          <Grid item xs={12} sm={6} md={3}>
+            <Card elevation={3} sx={{ p: 1 }}>
+              <CardContent sx={{ textAlign: "center" }}>
+                <Typography variant="subtitle1" fontWeight="bold">
+                  Revenue
                 </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  This month's total revenue
+                <Typography variant="h5" color="primary" fontWeight="bold">
+                  ₹{totalRevenue.toLocaleString()}
+                </Typography>
+                <Typography variant="caption" color="text.secondary">
+                  This month
                 </Typography>
               </CardContent>
             </Card>
           </Grid>
 
           {/* Orders Summary */}
-          <Grid item xs={12} md={6}>
-            <Card elevation={3}>
-              <CardContent>
-                <Typography variant="h6">Total Orders</Typography>
-                <Typography variant="h4" color="secondary" fontWeight="bold">
-                  324
+          <Grid item xs={12} sm={6} md={3}>
+            <Card elevation={3} sx={{ p: 1 }}>
+              <CardContent sx={{ textAlign: "center" }}>
+                <Typography variant="subtitle1" fontWeight="bold">
+                  Total Orders
                 </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  Orders completed this month
+                <Typography variant="h5" color="secondary" fontWeight="bold">
+                  {totalOrders}
+                </Typography>
+                <Typography variant="caption" color="text.secondary">
+                  All-time
                 </Typography>
               </CardContent>
             </Card>

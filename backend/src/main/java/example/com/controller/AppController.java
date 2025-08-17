@@ -56,17 +56,25 @@ public class AppController {
 	}
 
 	@PostMapping("/register")
-	public String registerUser(@RequestBody RegisterUser r) {
+	public ResponseEntity<?> registerUser(@RequestBody RegisterUser r) {
 		try {
-			if (service.findByEmail(r.getEmail()) != null) {
-				return "Email already exists.";
+			r.setUsername(r.getUsername().trim());
+			r.setEmail(r.getEmail().trim());
+			r.setRole(r.getRole().trim());
+
+			RegisterUser existingUser = service.findByEmail(r.getEmail());
+			if (existingUser != null) {
+				return ResponseEntity.badRequest().body(Map.of("success", false, "message", "Email already exists."));
 			} else if (service.addUsers(r)) {
-				return "User details added successfully...";
+				return ResponseEntity.ok(Map.of("success", true, "message", "User registered successfully."));
+			} else {
+				return ResponseEntity.badRequest().body(Map.of("success", false, "message", "User details invalid."));
 			}
-		} catch (DataIntegrityViolationException e) {
-			return "User details invalid.";
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.internalServerError()
+					.body(Map.of("success", false, "message", "Something went wrong."));
 		}
-		return "Something went wrong";
 
 	}
 
@@ -83,22 +91,23 @@ public class AppController {
 			Map<String, String> response = service.loginUser(login);
 			return ResponseEntity.ok(response);
 		} catch (BadCredentialsException e) {
-			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+					.body(Map.of("success", false, "message", e.getMessage()));
 		} catch (Exception e) {
 			e.printStackTrace();
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Something went wrong");
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body(Map.of("success", false, "message", "Something went wrong"));
 		}
 	}
 
 	@PostMapping("/owner/menu/add")
 
 	public ResponseEntity<String> addMenuItems(@RequestBody Menu m) {
-	    if (service.addMenuItems(m)) {
-	        return ResponseEntity.ok("Menu added successfully.");
-	    } else {
-	        return ResponseEntity.badRequest()
-	                             .body("Warning: Menu already exists.");
-	    }
+		if (service.addMenuItems(m)) {
+			return ResponseEntity.ok("Menu added successfully.");
+		} else {
+			return ResponseEntity.badRequest().body("Warning: Menu already exists.");
+		}
 	}
 
 	@PutMapping("/owner/menu/update")
@@ -125,7 +134,7 @@ public class AppController {
 		return "manager update failed..";
 	}
 
-	@PutMapping("/manager/menu/update")
+	@PutMapping("update/menu/manager")
 	public String updateMenuByManager(@RequestBody Menu m) {
 		if (service.updateMenuByManager(m)) {
 			return "menu updated..!";
@@ -133,20 +142,18 @@ public class AppController {
 		}
 		return "update failed..";
 	}
-	
-	
+
 	@PostMapping("/order/addorder")
 	public ResponseEntity<Orders> addOrderByManager(@RequestBody Orders odr) {
-	    Orders savedOrder = service.addOrderAndReturn(odr);
-	    System.out.print("Order: " + savedOrder + odr);
-	    if (savedOrder != null) {
-	        return ResponseEntity.ok(savedOrder); 
-	    }
-	    return ResponseEntity.badRequest().build();
+		Orders savedOrder = service.addOrderAndReturn(odr);
+		System.out.print("Order: " + savedOrder + odr);
+		if (savedOrder != null) {
+			return ResponseEntity.ok(savedOrder);
+		}
+		return ResponseEntity.badRequest().build();
 	}
 
-
-	@GetMapping("/view/order")
+	@GetMapping("/view/orders")
 	public List<Orders> listOfOrders() {
 		List<Orders> o = service.findAllOrders();
 		if (o != null) {
@@ -174,18 +181,7 @@ public class AppController {
 		return null;
 	}
 
-//	@PutMapping("/manager/updatepassword")
-//	public String updatePassword(@RequestBody Login log) {
-//		System.out.println(log.getUseremail());
-//		System.out.println(log.getPassword());
-//
-//		if (service.updatePassword(log)) {
-//			return "Update Successful...";
-//		}
-//		return "Error..";
-//	}
-
-	@PutMapping("/manager/updatepassword")
+	@PutMapping("/updatepassword")
 	public ResponseEntity<String> updatePassword(@RequestBody PasswordUpdateRequest request) {
 		try {
 			boolean success = service.updatePassword(request);
@@ -194,25 +190,24 @@ public class AppController {
 			} else {
 				return ResponseEntity.status(400).body("Invalid current password.");
 			}
+		} catch (RuntimeException ex) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
 		}
-		catch (RuntimeException ex) {
-		       return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
-		  }
-		
-		
-	}
-	
-	@PostMapping("/createpayment")
-    public ResponseEntity<PaymentResponse> createPayment(@RequestBody PaymentRequest request) throws StripeException {
-		System.out.println("Order ID received in request: " + request.getOrderId());
-        return ResponseEntity.ok(service.createPaymentIntent(request));
-    }
-	
-	 @GetMapping("/invoice/{paymentId}")
-	 public void generateInvoice(@PathVariable Long paymentId, HttpServletResponse response) throws IOException, Exception {
-		 System.out.println("Generating invoice for Payment ID: " + paymentId);
 
-		    service.generateInvoice(paymentId, response);
-	    }
+	}
+
+	@PostMapping("/createpayment")
+	public ResponseEntity<PaymentResponse> createPayment(@RequestBody PaymentRequest request) throws StripeException {
+		System.out.println("Order ID received in request: " + request.getOrderId());
+		return ResponseEntity.ok(service.createPaymentIntent(request));
+	}
+
+	@GetMapping("/invoice/{paymentId}")
+	public void generateInvoice(@PathVariable Long paymentId, HttpServletResponse response)
+			throws IOException, Exception {
+		System.out.println("Generating invoice for Payment ID: " + paymentId);
+
+		service.generateInvoice(paymentId, response);
+	}
 
 }

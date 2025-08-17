@@ -16,6 +16,7 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -73,7 +74,9 @@ public class ManagementDAOImpl implements ManagementDAO {
 
 	 @Autowired
 	 private PaymentRepository paymentRepository;
-
+	 private final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+	 
+	 
 	 
 	@Override
 	public boolean addMenuItems(Menu m) {
@@ -201,28 +204,17 @@ public class ManagementDAOImpl implements ManagementDAO {
 		return 0;
 	}
 
-//	@Transactional
-//	public boolean updatePassword(Login log) {
-//		String email = log.getUseremail();
-//	    String password = log.getPassword();
-//
-//	    RegisterUser user = userRepo.findByEmail(email);
-//	    System.out.println("Inside updatePassword()");
-//
-//	    if (user != null && user.getPassword().equals(password) && user.getEmail().equals(email)) {
-//	      
-//	        int rowsUpdated = userRepo.updatePassword(email, password); 
-//	        System.out.println("Rows updated: " + rowsUpdated);
-//	        return rowsUpdated > 0;
-//	    }
-//	    return false;
-//	}
-
 	@Override
-	public boolean addUsers(RegisterUser r) {
-		if (userRepo.save(r) != null)
-			return true;
-		return false;
+	public boolean addUsers(RegisterUser user) {
+//		BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+
+		user.setPassword(encoder.encode(user.getPassword()));
+        try {
+            return userRepo.save(user) != null;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
 
 	}
 
@@ -251,14 +243,17 @@ public class ManagementDAOImpl implements ManagementDAO {
 		if (user == null) {
 			throw new BadCredentialsException("User not found");
 		}
-
-		if (!user.getPassword().equals(login.getPassword())) {
-			throw new BadCredentialsException("Invalid password");
-		}
+		
+		 BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+		   if (!encoder.matches(login.getPassword(), user.getPassword())) {
+		        throw new BadCredentialsException("Invalid password");
+		    }
 
 		String token = jwtTokenProvider.generateToken(user.getEmail(), user.getRole());
 
 		Map<String, String> response = new HashMap<>();
+		response.put("success", "true");
+		response.put("message", "Login successful");
 		response.put("token", token);
 		response.put("email", user.getEmail());
 		response.put("role", user.getRole());
@@ -269,7 +264,7 @@ public class ManagementDAOImpl implements ManagementDAO {
 	@Transactional
 	public boolean updatePassword(PasswordUpdateRequest request) {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		String email = (String) authentication.getPrincipal(); // Email from JWT set in SecurityContext
+		String email = authentication.getName();
 
 		String currentPassword = request.getCurrentPassword();
 		String newPassword = request.getNewPassword();
@@ -281,11 +276,11 @@ public class ManagementDAOImpl implements ManagementDAO {
 	        throw new RuntimeException("User not found.");
 	    }
 
-	    if (!user.getPassword().equals(currentPassword)) {
-	        throw new RuntimeException("Incorrect current password.");
-	    }
+		 if (!encoder.matches(currentPassword, user.getPassword())) {
+		        throw new RuntimeException("Incorrect current password.");
+		    }
 
-	    int rowsUpdated = userRepo.updatePassword(email, newPassword);
+		 int rowsUpdated = userRepo.updatePassword(email, encoder.encode(newPassword));
 	    System.out.println("Rows updated: " + rowsUpdated);
 	    return rowsUpdated > 0;
 	}
@@ -364,13 +359,11 @@ public class ManagementDAOImpl implements ManagementDAO {
         } catch (Exception e) {
             throw new IOException("Error generating invoice PDF", e);
         }
-
-        // Optionally send invoice email after generating the PDF
         try {
             invoiceEmailService.sendInvoiceEmail(payment, order);
         } catch (Exception e) {
             e.printStackTrace();
-            // Optional: log failure but don't block invoice generation
+            
         }
     }
 

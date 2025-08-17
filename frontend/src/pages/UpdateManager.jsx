@@ -109,8 +109,8 @@ const UpdateManager = () => {
             margin="normal"
           >
             <MenuItem value="">Select</MenuItem>
-            <MenuItem value="Available">Available</MenuItem>
-            <MenuItem value="Not Available">Not Available</MenuItem>
+            <MenuItem value="Active">Active</MenuItem>
+            <MenuItem value="Inactive">Inactive</MenuItem>
           </TextField>
 
           <Box display="flex" justifyContent="space-between" mt={2}>

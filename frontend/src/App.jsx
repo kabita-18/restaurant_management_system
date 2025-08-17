@@ -3,7 +3,7 @@ import { BrowserRouter as Router,Routes,Route } from 'react-router-dom'
 import ManagerHome from './pages/ManagerHome'
 import ViewOrders from './pages/ViewOrders'
 import UpdateMenuOwner from './pages/UpdateMenuOwner'
-import UpdateMenuManag from './pages/UpdateMenuManag'
+import UpdateMenuManag from './pages/UpdateMenuManager'
 import ViewMenu from './pages/ViewMenu'
 import SubmitOrder from './pages/SubmitOrder'
 import UpdateManager from './pages/UpdateManager'
@@ -21,6 +21,7 @@ import CheckoutForm from './pages/CheckoutForm';
 import stripeProvider from './Stripe Payment/StripeProvider'
 import { Elements } from '@stripe/react-stripe-js';
 import OrderSummary from './pages/OrderSummary';
+import UpdateMenuManager from './pages/UpdateMenuManager';
 
 
 
@@ -32,9 +33,9 @@ function App() {
       <Router>
         <Routes>
           <Route path='/managerhome' element={<ManagerHome/>}/>
-          <Route path='/vieworders' element={<ViewOrders/>}/>
+          <Route path='/view/orders' element={<ViewOrders/>}/>
           <Route path='/view/menu' element={<ViewMenu/>}/>
-          <Route path='/updatemenumanag' element={<UpdateMenuManag/>}/>
+          <Route path='/update/menu/manager' element={<UpdateMenuManager/>}/>
           <Route path="/updatemenuowner" element={<UpdateMenuOwner/>}/>
           <Route path='/submitorder' element={<SubmitOrder />}/>
           <Route path='/updatemanager' element={ <UpdateManager/>}/>

@@ -109,7 +109,7 @@ const ViewManager = () => {
                 <TableCell>{manager.mid}</TableCell>
                 <TableCell>{manager.mname}</TableCell>
                 <TableCell>{manager.email || <i>Not Available</i>}</TableCell>
-                <TableCell sx={{ color: manager.status === 'Available' ? 'green' : 'red' }}>
+                <TableCell sx={{ color: manager.status === 'Active' ? 'green' : 'red' }}>
                   {manager.status}
                 </TableCell>
               </TableRow>

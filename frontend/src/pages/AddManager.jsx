@@ -91,7 +91,7 @@ const AddManager = () => {
             onChange={handleChange}
             required
           >
-            <MenuItem value="Active">Active</MenuItem>
+            <MenuItem value="Active" >Active</MenuItem>
             <MenuItem value="Inactive">Inactive</MenuItem>
           </Select>
         </FormControl>

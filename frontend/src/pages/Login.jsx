@@ -106,7 +106,8 @@ const Login = () => {
         .then((res) => {
           console.log("Login API response:", res);
           console.log(res.role);
-          if (res.token) {
+          if (res.success) {
+            localStorage.setItem("message", res.message)
             localStorage.setItem("token", res.token);
             localStorage.setItem("role", res.role);
             localStorage.setItem("email", res.email);
@@ -126,13 +127,13 @@ const Login = () => {
                 break;
             }
           } else {
-            alert("Login failed: No token received");
+            alert(res.message||"Login failed: No token received");
           }
         })
         .catch((error) => {
-          console.error(error);
-          alert("Login failed");
-        });
+      console.error("Login error:", error);
+      alert("Something went wrong while logging in. Please try again.");
+    });
     },
   });
 

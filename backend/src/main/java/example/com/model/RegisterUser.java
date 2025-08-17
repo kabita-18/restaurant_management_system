@@ -17,7 +17,7 @@ public class RegisterUser {
     @GeneratedValue(strategy = GenerationType.AUTO, generator = "port_gen")
     private Long id;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false)
     private String username;
 
     @Column(nullable = false, unique = true)
@@ -26,8 +26,8 @@ public class RegisterUser {
     @Column(nullable = false)
     private String password;
 
-    @Column(nullable = false)
-    private String repeatpassword;
+//    @Column(nullable = false)
+//    private String repeatpassword;
 
     @Column(nullable = false)
     private String role;  
@@ -45,8 +45,8 @@ public class RegisterUser {
     public String getPassword() { return password; }
     public void setPassword(String password) { this.password = password; }
 
-    public String getRepeatpassword() { return repeatpassword; }
-    public void setRepeatpassword(String repeatpassword) { this.repeatpassword = repeatpassword; }
+//    public String getRepeatpassword() { return repeatpassword; }
+//    public void setRepeatpassword(String repeatpassword) { this.repeatpassword = repeatpassword; }
 
     public String getRole() { return role; }
     public void setRole(String role) { this.role = role; }
@@ -56,20 +56,19 @@ public class RegisterUser {
         super();
     }
 
-    public RegisterUser(Long id, String username, String email, String password, String repeatpassword, String role) {
+    public RegisterUser(Long id, String username, String email, String password, String role) {
         super();
         this.id = id;
         this.username = username;
         this.email = email;
         this.password = password;
-        this.repeatpassword = repeatpassword;
         this.role = role;
     }
 
     @Override
     public String toString() {
         return "RegisterUser [id=" + id + ", username=" + username + ", email=" + email + ", password=" + password
-                + ", repeatpassword=" + repeatpassword + ", role=" + role + "]";
+                + ", role=" + role + "]";
     }
 	
 }

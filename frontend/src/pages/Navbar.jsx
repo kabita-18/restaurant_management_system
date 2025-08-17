@@ -1,6 +1,6 @@
-import React from 'react';
-import { AppBar, Toolbar, Typography, Box, Button } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
+import React from "react";
+import { AppBar, Toolbar, Typography, Box, Button } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 
 const Navbar = () => {
   const nav = useNavigate();
@@ -14,7 +14,7 @@ const Navbar = () => {
         position: "absolute",
         top: 0,
         width: "100%",
-        zIndex: 2
+        zIndex: 2,
       }}
     >
       <Toolbar sx={{ justifyContent: "space-between", paddingX: 6 }}>
@@ -43,9 +43,15 @@ const Navbar = () => {
             <Button
               key={index}
               variant="contained"
-              onClick={() =>
-                nav(label.toLowerCase() === "home" ? "/" : `/${label.toLowerCase()}`)
-              }
+              onClick={() => {
+                if (label.toLowerCase() === "home") {
+                  nav("/");
+                } else if (label.toLowerCase() === "menu") {
+                  nav("/view/menu");
+                } else {
+                  nav(`/${label.toLowerCase()}`);
+                }
+              }}
               sx={{
                 color: "white",
                 backgroundColor: "#f8b500",

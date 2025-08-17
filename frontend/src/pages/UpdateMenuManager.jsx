@@ -6,7 +6,7 @@ import { UpdateMenuItemsManager } from '../Service/service'
 import { useNavigate } from 'react-router-dom'
 
 
-const UpdateMenuManag = () => {
+const UpdateMenuManager = () => {
     const [menu,setMenu]=useState([])
     const nav=useNavigate()
     const validate = (values)=>{
@@ -116,4 +116,4 @@ const UpdateMenuManag = () => {
     )
     }
 
-export default UpdateMenuManag
+export default UpdateMenuManager

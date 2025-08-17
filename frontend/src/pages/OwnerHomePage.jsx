@@ -14,11 +14,12 @@ import {
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import ExpandLess from "@mui/icons-material/ExpandLess";
 import ExpandMore from "@mui/icons-material/ExpandMore";
+import { getAllOrders } from "../Service/service";
 
 const drawerWidth = 240;
 
 const Dropdown = ({ title, items }) => {
-  const [open, setOpen] = useState(false);
+const [open, setOpen] = useState(false);
 
   return (
     <>
@@ -49,6 +50,7 @@ const OwnerHome = () => {
   const [profile, setProfile] = useState(null);
   const [menu, setMenu] = useState([]);
   const [counts, setCounts] = useState({ total: 0, available: 0, unavailable: 0 });
+  const [totalOrders, setTotalOrders] = useState(0);  
 
   useEffect(() => {
     const email = localStorage.getItem("email");
@@ -85,8 +87,21 @@ const OwnerHome = () => {
   fetchMenuData();
 }, []);
 
+ useEffect(() => {
+    const fetchOrders = async () => {
+      try {
+        const data = await getAllOrders();
+        setTotalOrders(data.length); 
+      } catch (error) {
+        console.error("Failed to fetch orders:", error);
+      }
+    };
 
-  if (!profile) return <div>Loading your profile...</div>;
+    fetchOrders();
+  }, []);
+
+
+if (!profile) return <div>Loading your profile...</div>;
 
   
 
@@ -136,6 +151,9 @@ const OwnerHome = () => {
           <ListItem component={Link} to="/view/menu">
             <ListItemText primary="VIEW MENU" />
           </ListItem>
+          <ListItem component={Link} to="/view/orders">
+            <ListItemText primary="VIEW ORDERS" />
+          </ListItem>
           <ListItem onClick={handleLogout}>
             <ListItemText primary="LOGOUT" sx={{ color: "red" }} />
           </ListItem>
@@ -183,6 +201,15 @@ const OwnerHome = () => {
             </Typography>
             <Typography variant="h4" fontWeight="bold">
               {counts.unavailable}
+            </Typography>
+          </Box>
+
+           <Box sx={{ p: 3, bgcolor: "#c8e6c9", borderRadius: 2 }}>
+            <Typography variant="h6" gutterBottom>
+              Total Orders
+            </Typography>
+            <Typography variant="h4" fontWeight="bold">
+              {totalOrders}
             </Typography>
           </Box>
         </Box>

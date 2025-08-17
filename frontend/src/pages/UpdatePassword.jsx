@@ -17,7 +17,7 @@ const UpdatePassword = () => {
   const nav = useNavigate();
 
   const getUserRoleOrEmail = () => {
-    const token = localStorage.getItem("token"); // Adjust based on where you store the JWT
+    const token = localStorage.getItem("token"); 
     if (token) {
       const decoded = jwtDecode(token);
       return decoded.role;
@@ -54,7 +54,6 @@ const UpdatePassword = () => {
       updatePassword(payload)
         .then((res) => {
           alert('Password updated successfully!');
-
            const user = getUserRoleOrEmail();
           if (user === "MANAGER") {
             nav('/managerhome');

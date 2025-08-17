@@ -50,6 +50,8 @@ const CheckoutForm = () => {
   const order = location.state?.order || {};
   console.log("Received order data:", order);
   // const { orderid, tprice, customerName, email } = location.state?.order;
+  const userEmail = localStorage.getItem("email") || order.email || "guest@email.com";
+  console.log("Checkout Form",userEmail)
 
   const [processing, setProcessing] = useState(false);
   const [error, setError] = useState("");
@@ -91,7 +93,7 @@ const CheckoutForm = () => {
           card: cardElement,
           billing_details: {
             name: order.customerName || "Guest",
-            email: order.email || "guest@email.com",
+            email: userEmail,
           },
         },
       });
@@ -105,7 +107,7 @@ const CheckoutForm = () => {
         await downloadInvoice(paymentId);
 
         cardElement.clear();
-        navigate("/order/addorder");
+        // navigate("/order/addorder");
       }
     } catch (err) {
       console.error("Stripe Payment Error:", err);
