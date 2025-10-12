@@ -128,6 +128,8 @@ export const AddOrderDetails = async (order) => {
   }
 };
 
+
+
 export const createPaymentIntent = async (request) => {
   try {
     console.log("Received in createPaymentIntent:", request);
@@ -167,4 +169,50 @@ export const getAllOrders = async () => {
     console.error("Error fetching orders:", error);
     throw error;
   }
+};
+
+export const confirmOrderId = async (id) => {
+  const response = await myAxios.put(
+    `deliciousbyte/confirm/${id}`,
+    
+  );
+  return response.data;
+}
+
+export const subscribeOrderStatus = (orderId, onMessage, onError) => {
+  const token = localStorage.getItem("token"); // ✅ must match what you used in AddOrderDetails
+  if (!token) {
+    console.error("❌ No token found in localStorage");
+    return null;
+  }
+
+  // Attach token in query param (SSE doesn’t allow custom headers)
+  const eventSource = new EventSource(
+    `${BASE_URL}/deliciousbyte/track/${orderId}?token=${token}`
+  );
+
+  // ✅ Listen for named event "order-status"
+  eventSource.addEventListener("order-status", (event) => {
+    try {
+      const data = JSON.parse(event.data); // {"status":"CONFIRMED"}
+      console.log("📩 Received event:", data);
+      if (onMessage) onMessage(data);
+    } catch (err) {
+      console.error("❌ Failed to parse SSE data:", err, event.data);
+    }
+  });
+
+  // Optional: catch all messages
+  eventSource.onmessage = (event) => {
+    console.log("💬 Default onmessage:", event.data);
+  };
+
+  // Handle errors
+  eventSource.onerror = (err) => {
+    console.error("⚠️ SSE connection error:", err);
+    if (onError) onError(err);
+    // Don't close immediately, let backend retry unless you want manual reconnects
+  };
+
+  return eventSource;
 };

@@ -7,13 +7,23 @@ import {
   Typography,
   TextField,
   Button,
-  Container
+  Container,
+  IconButton
 } from '@mui/material';
 import { updatePassword } from '../Service/service';
 import { jwtDecode } from 'jwt-decode';
+import { styled } from "@mui/material/styles";
+import CloseIcon from '@mui/icons-material/Close'; 
 
 
 const UpdatePassword = () => {
+  const Error = styled("div")({
+  color: "#ff5a5f",
+  fontSize: "13px",
+  marginTop: "4px",
+  marginBottom: "8px",
+});
+
   const nav = useNavigate();
 
   const getUserRoleOrEmail = () => {
@@ -72,8 +82,15 @@ const UpdatePassword = () => {
 
   return (
     <Container maxWidth="sm">
-      <Paper elevation={6} sx={{ p: 4, mt: 8, borderRadius: 2 }}>
+      <Paper elevation={6} sx={{ p: 4, mt: 8, borderRadius: 2, position: "relative"}}>
+        <IconButton
+          onClick={() => nav(-1)} // Go back to previous page
+          sx={{ position: "absolute", top: 10, right: 10 }}
+        >
+          <CloseIcon />
+        </IconButton>
         <form onSubmit={formik.handleSubmit}>
+
           <Typography variant="h5" align="center" gutterBottom>
             Change Password
           </Typography>
@@ -86,10 +103,14 @@ const UpdatePassword = () => {
             value={formik.values.currentPassword}
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
-            error={formik.touched.currentPassword && Boolean(formik.errors.currentPassword)}
-            helperText={formik.touched.currentPassword && formik.errors.currentPassword}
+            // error={formik.touched.currentPassword && Boolean(formik.errors.currentPassword)}
+            // helperText={formik.touched.currentPassword && formik.errors.currentPassword}
             margin="normal"
+            padding-top="0"
           />
+          {formik.touched.currentPassword && formik.errors.currentPassword && (
+            <Error>{formik.errors.currentPassword}</Error>
+          )}
 
           <TextField
             fullWidth
@@ -99,10 +120,13 @@ const UpdatePassword = () => {
             value={formik.values.newPassword}
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
-            error={formik.touched.newPassword && Boolean(formik.errors.newPassword)}
-            helperText={formik.touched.newPassword && formik.errors.newPassword}
+            // error={formik.touched.newPassword && Boolean(formik.errors.newPassword)}
+            // helperText={formik.touched.newPassword && formik.errors.newPassword}
             margin="normal"
           />
+           {formik.touched.currentPassword && formik.errors.currentPassword && (
+            <Error>{formik.errors.currentPassword}</Error>
+          )}
 
           <Box textAlign="center" mt={3}>
             <Button variant="contained" color="primary" type="submit">

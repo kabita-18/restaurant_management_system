@@ -156,8 +156,8 @@ public class Orders {
         return orderStatus;
     }
 
-    public void setOrderStatus(String orderStatus) {
-        this.orderStatus = orderStatus;
+    public void setOrderStatus(String string) {
+        this.orderStatus = string;
     }
 
     public String getPaymentMode() {

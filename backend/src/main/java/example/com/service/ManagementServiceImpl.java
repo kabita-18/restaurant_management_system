@@ -128,4 +128,16 @@ public class ManagementServiceImpl implements ManagementService {
 		
 	}
 
+	@Override
+	public Object confirmOrder(Long id) {
+		// TODO Auto-generated method stub
+		return managementDAO.confirmOrder(id);
+	}
+
+	@Override
+	public Orders cancelOrder(Long id) {
+		// TODO Auto-generated method stub
+		return managementDAO.cancelOrder(id);
+	}
+
 }

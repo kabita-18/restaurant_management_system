@@ -22,6 +22,9 @@ import stripeProvider from './Stripe Payment/StripeProvider'
 import { Elements } from '@stripe/react-stripe-js';
 import OrderSummary from './pages/OrderSummary';
 import UpdateMenuManager from './pages/UpdateMenuManager';
+import './index.css'; 
+import OrderSuccess from './pages/OrderSuccess';
+import AnalyticsPage from './pages/AnalyticsPage';
 
 
 
@@ -50,6 +53,8 @@ function App() {
           <Route path="/order/addorder" element={<PlaceOrder/>} />
           <Route path="/checkout" element={<CheckoutForm />} />
           <Route path='/order-summary'element={<OrderSummary/>}/>
+          <Route path='/order-success'element={<OrderSuccess/>}/>
+          <Route path="/analytics" element={<AnalyticsPage/>}/>
           </Routes>
       </Router>
 

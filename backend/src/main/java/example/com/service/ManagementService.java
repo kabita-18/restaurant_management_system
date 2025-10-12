@@ -58,6 +58,10 @@ public interface ManagementService {
 
 	public void generateInvoice(Long paymentId, HttpServletResponse response) throws IOException;
 
+	public Object confirmOrder(Long id);
+
+	public Orders cancelOrder(Long id);
+
 //	public boolean updatePassword(String email, String newPassword);
 
 

@@ -42,7 +42,9 @@ import example.com.model.PaymentEntity;
 import example.com.model.PaymentRequest;
 import example.com.model.PaymentResponse;
 import example.com.model.RegisterUser;
+import example.com.service.EventSourcingService;
 import example.com.service.InvoiceEmailService;
+import example.com.service.OrderStatusSimulator;
 import example.com.service.PdfGenerator;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -75,6 +77,11 @@ public class ManagementDAOImpl implements ManagementDAO {
 	 @Autowired
 	 private PaymentRepository paymentRepository;
 	 private final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+	 @Autowired
+	 private EventSourcingService eventSourcingService;
+	 
+	 @Autowired
+	 private OrderStatusSimulator orderStatusSimulator; 
 	 
 	 
 	 
@@ -136,12 +143,42 @@ public class ManagementDAOImpl implements ManagementDAO {
 	            }
 	            odr.setOrderinfo(managedItems);
 	        }
+			
+			Orders savedOrder = myRepo3.save(odr);
+			 System.out.println(">>> Order created, orderId=" + savedOrder.getOrderid());
+//			EventSourcingService eventSourcingService = new EventSourcingService(null, null);
+			eventSourcingService.recordEvent(savedOrder.getOrderid(), "ORDER_CREATED", savedOrder);
+			System.out.println(">>> Starting status flow for orderId=" + savedOrder.getOrderid());
+			orderStatusSimulator.startStatusFlow(savedOrder.getOrderid());
 
-	        return myRepo3.save(odr); 
+	        return savedOrder; 
 	    } catch (Exception e) {
 	        e.printStackTrace(); 
 	        return null;
 	    }
+	}
+	
+	@Override
+	public Object confirmOrder(Long id) {
+		Orders order = myRepo3.findByorderid(id).orElseThrow();
+        order.setOrderStatus("CONFIRMED");
+        Orders savedOrder = myRepo3.save(order);
+		eventSourcingService.recordEvent(id, "ORDER_CONFIRMED", savedOrder);
+		orderStatusSimulator.startStatusFlow(savedOrder.getOrderid());
+		
+
+        return savedOrder;
+	}
+	
+	@Override
+	public Orders cancelOrder(Long id) {
+		Orders order = myRepo3.findById(id).orElseThrow();
+        order.setOrderStatus("CANCELLED");
+        Orders savedOrder = myRepo3.save(order);
+
+        eventSourcingService.recordEvent(id, "ORDER_CANCELLED", savedOrder);
+
+        return savedOrder;
 	}
 
 	@Override
@@ -331,8 +368,8 @@ public class ManagementDAOImpl implements ManagementDAO {
 	    payment.setStripePaymentId(intent.getId());
 
 	    paymentRepository.save(payment);
-	    order.setOrderStatus("Completed");
-	    myRepo3.save(order);
+//	    order.setOrderStatus("Completed");
+//	    myRepo3.save(order);
 
 	    return new PaymentResponse(intent.getClientSecret(), payment.getId());
 	}
@@ -366,5 +403,5 @@ public class ManagementDAOImpl implements ManagementDAO {
             
         }
     }
-
+	
 }

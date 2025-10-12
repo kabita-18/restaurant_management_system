@@ -13,8 +13,9 @@ import Axios from "axios";
 import { UpdateMenuItemsOwners } from "../Service/service";
 import { styled } from "@mui/system";
 import Button from "@mui/material/Button";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
-// ✅ Styled components (same design as Additems)
 const Container = styled("div")({
   display: "flex",
   justifyContent: "flex-start",
@@ -106,7 +107,6 @@ const ButtonGroup = styled("div")({
   marginTop: "20px",
 });
 
-
 const validate = (values) => {
   const errors = {};
   if (!values.category) errors.category = "Select a category";
@@ -145,12 +145,19 @@ const UpdateMenuOwner = () => {
     onSubmit: (values) => {
       UpdateMenuItemsOwners(values)
         .then(() => {
-          alert("Menu updated successfully ✅");
-          navigate("/ownerhome");
+          toast.success("Menu submitted successfully!");
+          const role = localStorage.getItem("role");
+          if (role === "ADMIN") {
+            navigate("/ownerhome");
+          } else if (role === "MANAGER") {
+            navigate("/managerhome");
+          } else {
+            navigate("/");
+          }
         })
         .catch((error) => {
           console.error("Update error:", error);
-          alert("Failed to update ❌");
+          toast.error("Error submitting menu. Please try again.");
         });
     },
   });
@@ -240,19 +247,18 @@ const UpdateMenuOwner = () => {
                 disabled
                 style={{
                   width: "100%",
-                    padding: "10px",
-                    marginBottom: "10px",
-                    borderRadius: "8px",
-                    border: "1px solid #ffcc95",
-                    background: "rgba(240,240,240,0.9)", // light grey for disabled look
-                    color: "#5d4037",
-                    cursor: "not-allowed", 
+                  padding: "10px",
+                  marginBottom: "10px",
+                  borderRadius: "8px",
+                  border: "1px solid #ffcc95",
+                  background: "rgba(240,240,240,0.9)", // light grey for disabled look
+                  color: "#5d4037",
+                  cursor: "not-allowed",
                 }}
               />
             </div>
           )}
 
-       
           <Label>New Price (₹):</Label>
           <Input
             type="number"
@@ -283,13 +289,13 @@ const UpdateMenuOwner = () => {
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
             style={{
-               width: "100%",
-                padding: "10px",
-                marginBottom: "10px",
-                borderRadius: "8px",
-                border: "1px solid #ffcc95",
-                background: "rgba(255, 245, 220, 0.9)", // matches theme
-                color: "#5d4037",
+              width: "100%",
+              padding: "10px",
+              marginBottom: "10px",
+              borderRadius: "8px",
+              border: "1px solid #ffcc95",
+              background: "rgba(255, 245, 220, 0.9)", // matches theme
+              color: "#5d4037",
             }}
           >
             <option value="">Select</option>
@@ -306,20 +312,20 @@ const UpdateMenuOwner = () => {
               Update
             </StyledButton>
             <StyledButton
-            colorClass="back"
-            onClick={() => {
-              const role = localStorage.getItem("role"); 
-              if (role === "ADMIN") {
-                navigate("/ownerhome");
-              } else if (role === "MANAGER") {
-                navigate("/managerhome");
-              } else {
-                navigate("/"); // fallback
-              }
-            }}
-          >
-            Back
-          </StyledButton>
+              colorClass="back"
+              onClick={() => {
+                const role = localStorage.getItem("role");
+                if (role === "ADMIN") {
+                  navigate("/ownerhome");
+                } else if (role === "MANAGER") {
+                  navigate("/managerhome");
+                } else {
+                  navigate("/"); // fallback
+                }
+              }}
+            >
+              Back
+            </StyledButton>
           </ButtonGroup>
         </form>
       </Box>

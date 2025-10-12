@@ -12,6 +12,14 @@ import {
 } from "@mui/material";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import { getAllOrders } from "../Service/service";
+import {
+  PieChart,
+  Pie,
+  Cell,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+} from "recharts";
 
 const ManagerHome = () => {
   const nav = useNavigate();
@@ -221,16 +229,25 @@ const ManagerHome = () => {
           </Grid>
         </Grid>
 
-        {/* Generate Report Section */}
+
         <Box mt={4}>
-          <Paper elevation={3} sx={{ p: 3 }}>
+          <Paper elevation={3} sx={{ p: 3, }}>
             <Typography variant="h6">Generate Report</Typography>
-            <Typography variant="body2" color="text.secondary">
+            <Typography variant="body2" color="text.secondary" sx={{paddingTop:"0", color:"black", }}>
               Download detailed sales and inventory report for auditing.
             </Typography>
-            <Button variant="contained" sx={{ mt: 2 }}>
+            <Box display="flex" gap={2}>
+            <Button variant="contained" color="primary">
               Generate PDF
             </Button>
+            <Button
+              variant="outlined"
+              color="secondary"
+              onClick={() => nav("/analytics")}
+            >
+              View Analytics
+            </Button>
+           </Box>
           </Paper>
         </Box>
       </Box>

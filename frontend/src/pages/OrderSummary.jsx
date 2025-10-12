@@ -8,6 +8,7 @@ import {
   Divider,
 } from "@mui/material";
 import { useLocation, useNavigate } from "react-router-dom";
+import { confirmOrderId } from "../Service/service";
 
 const OrderSummary = () => {
   const location = useLocation();
@@ -46,19 +47,27 @@ const OrderSummary = () => {
     }
   }, [order.orderType]);
 
-  const handleProceed = () => {
-    console.log("Order before navigate:", order);
-    const userEmail = localStorage.getItem("email") || order.email;
-    navigate("/checkout", {
-      state: {
-        order: {
-          orderid: order.orderid,
-          tprice: order.tprice,
-          customerName: order.customerName,
-          email: userEmail,
-        },
-      },
-    });
+  const handleProceed = async() => {
+    try{
+        console.log("Order before navigate:", order);
+        console.log("Confirming order:", order.orderid);
+        const userEmail = localStorage.getItem("email") || order.email;
+        await confirmOrderId(order.orderid);
+        navigate("/checkout", {
+          state: {
+            order: {
+              orderid: order.orderid,
+              tprice: order.tprice,
+              customerName: order.customerName,
+              email: userEmail,
+            },
+          },
+        });
+    }
+    catch (error) {
+    console.error("❌ Error confirming order:", error);
+  }
+    
   };
   console.log("location state", location.state);
   console.log("location state", order.customerName);

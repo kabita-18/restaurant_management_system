@@ -1,60 +1,73 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Typography, Container, Box, AppBar, Toolbar, Button} from "@mui/material";
-import "slick-carousel/slick/slick.css"; 
-import "slick-carousel/slick/slick-theme.css";
+import { Container, Box } from "@mui/material";
 import Navbar from "./Navbar";
-
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
+import Footer from "../Component/Footer";
+import HeroSection from "./HeroSection";
+import SpecialsPage from "./SpecialsPage";
+import WhyChooseUs from "./WhyChooseUs";
+import Testimonials from "./Testimonials";
 
 const Home = () => {
-  const nav = useNavigate();
+  // useEffect(() => {
+  //   const interval = setInterval(() => {
+  //     setActiveUsers((prev) => prev + Math.floor(Math.random() * 3));
+  //   }, 4000);
+  //   return () => clearInterval(interval);
+  // }, []);
 
   return (
     <Box
       sx={{
-        backgroundImage: `url('/Homepage.jpg')`,
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-        height: "100vh",
+        minHeight: "100vh",
         display: "flex",
         flexDirection: "column",
-        justifyContent: "center",
         alignItems: "center",
-        position: "relative",
-        color: "white",
-        overflow: "hidden",
+        justifyContent: "center",
+        textAlign: "center",
+        color: "#fff",
+        // background: "linear-gradient(135deg, #ff9a9e 0%, #ff6a00 100%)"
       }}
     >
-     <Navbar/>
-      <Container sx={{ textAlign: "center", zIndex: 1 }}>
-        <Typography variant="h2" sx={{ fontWeight: "bold", mb: 4 }}>
-          Discover a New World of Taste
-        </Typography>
-        <Typography
-          variant="h6"
-          sx={{ maxWidth: 800, margin: "auto", lineHeight: 1.6 }}
-        >
-          Every trip is a new story and discovery: a meal you've never tasted
-          before, a tempting smell of roasted coffee, or freshly baked cookies.
-          Eat whatever and whenever you want! Our restaurant and bar are open
-          from early morning to late night, serving delicious meals and
-          beverages. From tasty and delicious Turkish cuisine to international
-          flavors. Bon appetit!
-        </Typography>
-      </Container>
-      
+      <Navbar />
+
       <Box
         sx={{
+          position: "absolute",
           top: 0,
           left: 0,
           right: 0,
           bottom: 0,
-          backgroundColor: "rgba(0,0,0,0.6)",
-          zIndex: 0,
+          // background: "linear-gradient(to bottom, rgba(0,0,0,0.6), rgba(0,0,0,0.9))",
+          color: "white",
         }}
       />
+
+      {/* Hero Section */}
+      <Container>
+        <HeroSection />
+      </Container>
+
+      {/* Specials Section */}
+      <Container>
+        <SpecialsPage />
+      </Container>
+
+      {/* Why Choose Us */}
+      <Container>
+        <WhyChooseUs />
+      </Container>
+
+      {/* Testimonials */}
+      <Container>
+        <Testimonials />
+      </Container>
+
+      {/* Footer */}
+      <Footer />
     </Box>
-    
   );
 };
 

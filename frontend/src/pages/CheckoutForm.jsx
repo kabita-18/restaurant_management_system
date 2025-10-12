@@ -108,6 +108,7 @@ const CheckoutForm = () => {
 
         cardElement.clear();
         // navigate("/order/addorder");
+        navigate("/order-success", { state: { order } });
       }
     } catch (err) {
       console.error("Stripe Payment Error:", err);
