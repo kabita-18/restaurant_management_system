@@ -2,25 +2,12 @@ package example.com.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @AllArgsConstructor
+@NoArgsConstructor   // Good to have a default constructor
 public class PaymentResponse {
-	private String clientSecret;  
-    private Long paymentId;       
-
-    public PaymentResponse(String clientSecret, Long paymentId) {
-        this.clientSecret = clientSecret;
-        this.paymentId = paymentId;
-    }
-
-    public String getClientSecret() {
-        return clientSecret;
-    }
-
-    public Long getPaymentId() {
-        return paymentId;
-    }
-	
-    
+    private String clientSecret;
+    private Long paymentId;
 }
