@@ -15,7 +15,9 @@ public class customCorsConfiguration implements CorsConfigurationSource {
     @Override
     public CorsConfiguration getCorsConfiguration(HttpServletRequest request) {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(List.of("http://localhost:5173")); // Your frontend URL
+//        config.setAllowedOrigins(List.of("http://localhost:5173")); // Your frontend URL
+//        http://delicious-bytes.s3-website.eu-north-1.amazonaws.com/
+        config.setAllowedOrigins(List.of("http://delicious-bytes.s3-website.eu-north-1.amazonaws.com"));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
         config.setAllowCredentials(true);

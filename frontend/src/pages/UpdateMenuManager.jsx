@@ -22,7 +22,7 @@ const UpdateMenuManager = () => {
         
     useEffect(()=>{
         const asyncall=async()=>
-        {await Axios.get("http://localhost:9090/deliciousbyte/view/menu")
+        {await Axios.get("http://restaurantmanagement-env.eba-imdxzriv.eu-north-1.elasticbeanstalk.com/deliciousbyte/view/menu")
         .then((res)=>{
         setMenu(res.data);
         // console.log(res)

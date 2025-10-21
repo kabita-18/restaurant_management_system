@@ -8,13 +8,13 @@ import jakarta.persistence.Id;
 import jakarta.persistence.SequenceGenerator;
 
 @Entity
-@SequenceGenerator(name = "port_gen_2", sequenceName = "port_gen_2",  initialValue = 2000)
+//@SequenceGenerator(name = "port_gen_2", sequenceName = "port_gen_2",  initialValue = 2000)
 
 public class Menu {
 	
 	
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO,generator="port_gen_2")
+	@GeneratedValue(strategy = GenerationType.AUTO)
 	private int menuid;
 	
 	@Column(unique = true, nullable = false)

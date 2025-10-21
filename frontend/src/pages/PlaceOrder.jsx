@@ -18,9 +18,9 @@ import { useNavigate } from "react-router-dom";
 
 const PlaceOrder = () => {
   const loggedEmail = localStorage.getItem("email") || "";
-  
-  console.log(loggedEmail)
-  
+
+  console.log(loggedEmail);
+
   const [menuItems, setMenuItems] = useState([]);
   const [quantities, setQuantities] = useState({});
   const [orderDetails, setOrderDetails] = useState({
@@ -29,8 +29,8 @@ const PlaceOrder = () => {
     phone: "",
     tableno: "",
     orderType: "",
-    orderStatus:"PENDING",
-    paymentMode:"CARD"
+    orderStatus: "PENDING",
+    paymentMode: "CARD",
   });
   const navigate = useNavigate();
 
@@ -64,9 +64,9 @@ const PlaceOrder = () => {
   }, 0);
 
   const handleSubmitOrder = async () => {
-    console.log(menuItems)
+    console.log(menuItems);
     const orderItems = menuItems
-      .filter((item) => quantities[item.menuid]) 
+      .filter((item) => quantities[item.menuid])
       .map((item) => ({
         orderItemId: item.menuid,
         dishname: item.dishname,
@@ -91,22 +91,22 @@ const PlaceOrder = () => {
       orderinfo: orderItems,
       tprice: totalPrice,
       orderStatus: orderDetails.orderStatus,
-      paymentMode: orderDetails.paymentMode
+      paymentMode: orderDetails.paymentMode,
     };
 
     try {
       const token = localStorage.getItem("token");
       const response = await AddOrderDetails(payload);
       const orderId = response;
-      // const savedOrder = response; 
-      console.log(orderId)
+      // const savedOrder = response;
+      console.log(orderId);
 
       if (!orderId) {
         throw new Error("Order ID not returned from backend.");
       }
 
       navigate("/order-summary", {
-        state: { order: orderId } 
+        state: { order: orderId },
       });
       // navigate("order-summary",{
       //   state:{
@@ -136,6 +136,10 @@ const PlaceOrder = () => {
       alert("Order failed. Please try again.");
     }
   };
+  const handleLogout = () => {
+    localStorage.clear(); // Clear all user data
+    navigate("/login"); // Redirect to login page
+  };
 
   return (
     <Box
@@ -158,7 +162,17 @@ const PlaceOrder = () => {
         }}
       >
         {/* Header */}
-        <Box sx={{ textAlign: "center", mb: 2 }}>
+        <Box
+          sx={{
+            textAlign: "center",
+            mb: 2,
+            py: 2,
+            px: 2,
+            backgroundColor: "#f5f5f5",
+            borderRadius: "8px",
+            position: "relative",
+          }}
+        >
           <Avatar
             sx={{ bgcolor: "#3f51b5", width: 60, height: 60, margin: "0 auto" }}
           >
@@ -174,6 +188,20 @@ const PlaceOrder = () => {
           >
             Freshly made dishes at your fingertips
           </Typography>
+          <Button
+            variant="contained"
+            color="error"
+            size="small"
+            onClick={handleLogout}
+            sx={{
+              position: "absolute",
+              top: 10,
+              right: 10,
+              fontWeight: "bold",
+            }}
+          >
+            Logout
+          </Button>
         </Box>
 
         {/* Customer Info */}
@@ -199,7 +227,6 @@ const PlaceOrder = () => {
                 name="customerName"
                 value={orderDetails.customerName}
                 onChange={handleInputChange}
-                
               />
             </Grid>
             <Grid item xs={12} sm={6}>
@@ -209,7 +236,7 @@ const PlaceOrder = () => {
                 name="email"
                 value={orderDetails.email}
                 onChange={handleInputChange}
-                inputProps={{readOnly:true}}
+                inputProps={{ readOnly: true }}
               />
             </Grid>
             <Grid item xs={12} sm={6}>
@@ -231,20 +258,20 @@ const PlaceOrder = () => {
               />
             </Grid>
             <Grid item xs={12} sm={3}>
-            <TextField
-              select
-              fullWidth
-              label="Order Type"
-              name="orderType"
-              value={orderDetails.orderType}
-              onChange={handleInputChange}
-              required
-            >
-              <MenuItem value="DINE_IN">Dine-In</MenuItem>
-              <MenuItem value="TAKEAWAY">Takeaway</MenuItem>
-              <MenuItem value="DELIVERY">Delivery</MenuItem>
-            </TextField>
-          </Grid>
+              <TextField
+                select
+                fullWidth
+                label="Order Type"
+                name="orderType"
+                value={orderDetails.orderType}
+                onChange={handleInputChange}
+                required
+              >
+                <MenuItem value="DINE_IN">Dine-In</MenuItem>
+                <MenuItem value="TAKEAWAY">Takeaway</MenuItem>
+                <MenuItem value="DELIVERY">Delivery</MenuItem>
+              </TextField>
+            </Grid>
           </Grid>
         </Paper>
 
@@ -356,15 +383,15 @@ const PlaceOrder = () => {
               color="secondary"
               size="large"
               onClick={() => {
-              const role = localStorage.getItem("role"); 
-              if (role === "ADMIN") {
-                navigate("/ownerhome");
-              } else if (role === "MANAGER") {
-                navigate("/managerhome");
-              } else {
-                navigate("/"); 
-              }
-            }}
+                const role = localStorage.getItem("role");
+                if (role === "ADMIN") {
+                  navigate("/ownerhome");
+                } else if (role === "MANAGER") {
+                  navigate("/managerhome");
+                } else {
+                  navigate("/");
+                }
+              }}
               sx={{ ml: 2 }}
             >
               ⬅ Back

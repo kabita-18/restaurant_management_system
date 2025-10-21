@@ -19,10 +19,10 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import jakarta.servlet.http.HttpServletRequest;
 
-@SpringBootApplication
+@SpringBootApplication(scanBasePackages = "example.com")
 @ComponentScan("example.com")
 @EntityScan("example.com.model")
-@EnableJpaRepositories("example.com.jpa")
+@EnableJpaRepositories("example.com.JPA")
 @Configuration
 @EnableWebMvc
 public class CapstonProjectDeliciousBytesApplication {
