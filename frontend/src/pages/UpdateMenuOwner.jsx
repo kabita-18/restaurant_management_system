@@ -123,7 +123,7 @@ const UpdateMenuOwner = () => {
   const [categories, setCategories] = useState([]);
 
   useEffect(() => {
-    Axios.get("http://restaurantmanagement-env.eba-imdxzriv.eu-north-1.elasticbeanstalk.com/deliciousbyte/view/menu")
+    Axios.get("https://restaurantmanagement-env.eba-imdxzriv.eu-north-1.elasticbeanstalk.com/deliciousbyte/view/menu")
       .then((res) => {
         setMenu(res.data);
         const uniqueCategories = [

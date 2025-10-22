@@ -71,7 +71,7 @@ const OwnerHome = () => {
   useEffect(() => {
   const fetchMenuData = async () => {
     try {
-      const res = await fetch('http://localhost:9090/deliciousbyte/view/menu');
+      const res = await fetch('http://restaurantmanagement-env.eba-imdxzriv.eu-north-1.elasticbeanstalk.com/deliciousbyte/view/menu');
       const data = await res.json();
       setMenu(data);
 
