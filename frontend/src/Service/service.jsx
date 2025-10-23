@@ -1,6 +1,6 @@
 import axios from "axios";
 
-export const BASE_URL = "https://restaurantmanagement-env.eba-imdxzriv.eu-north-1.elasticbeanstalk.com";
+export const BASE_URL = "http://restaurantmanagement-env.eba-imdxzriv.eu-north-1.elasticbeanstalk.com";
 // export const BASE_URL = "http://localhost:9090";
 export const myAxios = axios.create({
   baseURL: BASE_URL,

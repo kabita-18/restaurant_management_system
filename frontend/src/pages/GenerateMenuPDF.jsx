@@ -11,7 +11,7 @@ const DownloadMenuPDF = () => {
   useEffect(() => {
     const fetchMenu = async () => {
       try {
-        const response = await Axios.get('http://localhost:9090/deliciousbyte/view/menu');
+        const response = await Axios.get('http://restaurantmanagement-env.eba-imdxzriv.eu-north-1.elasticbeanstalk.com/deliciousbyte/view/menu');
         setMenu(response.data);
       } catch (error) {
         console.error('Failed to fetch menu:', error);

@@ -15,7 +15,7 @@ const ViewMenu = () => {
     const fetchMenu = async () => {
       try {
         const response = await Axios.get(
-          "https://restaurantmanagement-env.eba-imdxzriv.eu-north-1.elasticbeanstalk.com/deliciousbyte/view/menu"
+          "http://restaurantmanagement-env.eba-imdxzriv.eu-north-1.elasticbeanstalk.com/deliciousbyte/view/menu"
         );
         setMenu(response.data);
       } catch (error) {
