@@ -58,10 +58,10 @@ public class AppController {
 	@Autowired
 	private SseEmitterService emitterService;
 
-//	@GetMapping("/welcome")
-//	public String welcome() {
-//		return "Welcome to Web Application";
-//	}
+	@GetMapping("/welcome")
+	public String welcome() {
+		return "Welcome to Web Application";
+	}
 
 	@PostMapping("/register")
 	public ResponseEntity<?> registerUser(@RequestBody RegisterUser r)throws ManagementServiceException, ResourceNotFoundException {

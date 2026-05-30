@@ -17,6 +17,7 @@ public class JWTUtilityTokenProvider {
 
 	  @Value("${jwt.expiration}")
 	  private long expiration;
+
 	  private Key getSigningKey() {
 		    return Keys.hmacShaKeyFor(secret.getBytes());
 		}

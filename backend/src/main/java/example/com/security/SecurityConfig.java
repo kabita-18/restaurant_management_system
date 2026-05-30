@@ -11,6 +11,8 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.stereotype.Component;
@@ -30,16 +32,54 @@ public class SecurityConfig {
 	    private JWTFilter jwtFilter;
 	  @Autowired customCorsConfiguration customCorsConfig;
 
-	  
-	  @Bean
-	    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-	        http.csrf(AbstractHttpConfigurer::disable)
-            .authorizeHttpRequests(req -> req.anyRequest().permitAll())
-            .cors(c -> c.configurationSource(customCorsConfig.corsConfigurationSource()))
-            .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
-	        return http.build();
-	    }
-	  
+
+    @Bean
+    public SecurityFilterChain filterChain(
+            HttpSecurity http
+    ) throws Exception {
+
+        http
+
+                .csrf(AbstractHttpConfigurer::disable)
+
+                .cors(cors -> cors.configurationSource(
+                        customCorsConfig.corsConfigurationSource()
+                ))
+
+                // Stateless JWT Authentication
+                .sessionManagement(session ->
+                        session.sessionCreationPolicy(
+                                SessionCreationPolicy.STATELESS
+                        )
+                )
+
+                .authorizeHttpRequests(auth -> auth
+
+                        // Public APIs
+                        .requestMatchers(
+                                "/deliciousbyte/auth/**"
+                        ).permitAll()
+
+                        // Admin APIs
+                        .requestMatchers(
+                                "/admin/**"
+                        ).hasRole("ADMIN")
+
+                        // All other APIs require authentication
+                        .anyRequest()
+                        .authenticated()
+                )
+
+                // JWT Filter
+                .addFilterBefore(
+                        jwtFilter,
+                        UsernamePasswordAuthenticationFilter.class
+                );
+
+        return http.build();
+    }
+
+
 	  @Bean
 	    public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig) throws Exception {
 	        return authConfig.getAuthenticationManager();
@@ -57,6 +97,11 @@ public class SecurityConfig {
 //	      source.registerCorsConfiguration("/**", configuration);
 //	      return source;
 //	  }
+
+    @Bean
+    public PasswordEncoder passwordEncoder(){
+          return new BCryptPasswordEncoder();
+    }
 	  
 	 
 }
