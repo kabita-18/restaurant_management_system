@@ -11,8 +11,9 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import example.com.service.ManagementServiceException;
 import jakarta.servlet.http.HttpServletRequest;
 
-@ControllerAdvice
+//@ControllerAdvice
 public class ExceptionHandlerControllerAdvice {
+
 
     @ExceptionHandler(ResourceNotFoundException.class)
     @ResponseStatus(value = HttpStatus.NOT_FOUND)

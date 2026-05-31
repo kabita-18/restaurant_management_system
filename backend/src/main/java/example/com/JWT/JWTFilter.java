@@ -56,13 +56,13 @@ public class JWTFilter extends OncePerRequestFilter {
         try {
 
             // Check Bearer Token
-            if(authHeader != null &&
+            if (authHeader != null &&
                     authHeader.startsWith("Bearer ")) {
 
                 jwt = authHeader.substring(7);
 
                 // Validate JWT
-                if(jwtUtil.isTokenValid(jwt)) {
+                if (jwtUtil.isTokenValid(jwt)) {
 
                     email =
                             jwtUtil.extractUsername(jwt);

@@ -9,6 +9,7 @@ public class TestController {
 
     @GetMapping("/profile")
     public String profile(Authentication authentication) {
+        System.out.println(authentication);
         return "Welcome " + authentication.getName()
                 + ", JWT Authentication Successful";
 

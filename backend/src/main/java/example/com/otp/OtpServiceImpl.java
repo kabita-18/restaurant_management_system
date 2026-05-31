@@ -2,9 +2,11 @@ package example.com.otp;
 
 import example.com.JPA.UserRepository;
 import example.com.email.EmailService;
+import example.com.exception.InvalidOtpException;
+import example.com.exception.UserNotFoundException;
 import example.com.model.RegisterUser;
 import example.com.utils.EmailUtils;
-import lombok.AllArgsConstructor;
+
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,21 +47,23 @@ public class OtpServiceImpl implements OtpService{
     }
 
     @Override
-    public boolean verifyOtpAndActiveUser(String email, String otp) {
+    public void verifyOtpAndActiveUser(String email, String otp) {
         email = EmailUtils.normalize(email);
         Object storedOtp = redisTemplate.opsForValue().get(email);
 
         //OTP missing or expired
-        if(storedOtp == null) return false;
+        if(storedOtp == null) {
+            throw new InvalidOtpException("Otp expired or Not found");
+        }
 
         //OTP mismatch
         if(!storedOtp.toString().equals(otp)){
-            return false;
+            throw new InvalidOtpException("Invalid Otp");
         }
         // Find user
-        RegisterUser user = userRepository.findOptionalByEmail(email).orElse(null);
-
-        if(user == null) return false;
+        RegisterUser user = userRepository.findOptionalByEmail(email).orElseThrow(
+                () ->  new UserNotFoundException("User not found")
+        );
         logger.info(
                 "Stored OTP: {}, Incoming OTP: {}",
                 storedOtp,
@@ -67,12 +71,13 @@ public class OtpServiceImpl implements OtpService{
         );
         //Activate user
         user.setVerified(true);
+
         userRepository.save(user);
 
         //Delete OTP after success
         redisTemplate.delete(email);
 
         logger.info("OTP verified successfully for email: {}", email);
-        return true;
+
     }
 }

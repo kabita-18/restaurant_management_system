@@ -6,6 +6,9 @@ import example.com.dto.AuthResponse;
 import example.com.dto.LoginRequest;
 import example.com.dto.LoginResponse;
 import example.com.dto.RegisterRequest;
+import example.com.exception.EmailAlreadyExistsException;
+import example.com.exception.InvalidCredentialsException;
+import example.com.exception.UserNotFoundException;
 import example.com.mapper.UserMapper;
 import example.com.model.RegisterUser;
 import example.com.otp.OtpService;
@@ -36,10 +39,10 @@ public class AuthServiceImpl implements  AuthService {
     @Override
     public AuthResponse register(RegisterRequest request) {
         logger.info("Starting registration process for email: {}", request.email());
-        EmailUtils.normalize(request.email());
-        if(userRepository.findOptionalByEmail(request.email()).isPresent()){
+        String email = EmailUtils.normalize(request.email());
+        if(userRepository.findOptionalByEmail(email).isPresent()){
             logger.warn("User with email {} already exists", request.email());
-            return new AuthResponse(false, "User with email already exists");
+            throw new EmailAlreadyExistsException("User with email already exists");
         }
         RegisterUser user = userMapper.toEntity(request);
         logger.info("Password received: {}", request.password());
@@ -62,19 +65,19 @@ public class AuthServiceImpl implements  AuthService {
         RegisterUser user = userRepository.findOptionalByEmail(email).orElse(null);
         if(user == null){
             logger.warn("User with email {} not found", email);
-            return new LoginResponse(false, "User with email not found", null, null);
+            throw new UserNotFoundException("User with email not found");
         }
 
         //Verify password using BCrypt
         boolean passwordMatches = passwordEncoder.matches(request.password(), user.getPassword());
         if(!passwordMatches){
             logger.warn("Login failed. Password does not match : {}", request.email());
-            return new LoginResponse(false, "Login failed, Invalid email or password", null, null);
+            throw new InvalidCredentialsException("Login failed, Invalid email or password");
         }
         //Check email verification
         if(!user.isVerified()){
             logger.warn("Login failed. User is not verified: {}", email);
-            return new LoginResponse(false, "Login failed, Email not verified, Please verify your email first", null, null);
+            throw new InvalidCredentialsException( "Login failed, Email not verified, Please verify your email first");
         }
 
         //Generate JWT Token

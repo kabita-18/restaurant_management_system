@@ -2,6 +2,8 @@ package example.com.security;
 
 import java.util.List;
 
+import example.com.JWT.JwtAuthenticationEntryPoint;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -26,20 +28,20 @@ import jakarta.servlet.http.HttpServletRequest;
 
 @Configuration
 @EnableMethodSecurity
+@AllArgsConstructor
 
 public class SecurityConfig {
-	  @Autowired
-	    private JWTFilter jwtFilter;
-	  @Autowired customCorsConfiguration customCorsConfig;
+
+    private final JWTFilter jwtFilter;
+    private final customCorsConfiguration customCorsConfig;
+    private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
 
 
     @Bean
     public SecurityFilterChain filterChain(
             HttpSecurity http
     ) throws Exception {
-
         http
-
                 .csrf(AbstractHttpConfigurer::disable)
 
                 .cors(cors -> cors.configurationSource(
@@ -52,9 +54,7 @@ public class SecurityConfig {
                                 SessionCreationPolicy.STATELESS
                         )
                 )
-
                 .authorizeHttpRequests(auth -> auth
-
                         // Public APIs
                         .requestMatchers(
                                 "/deliciousbyte/auth/**"
@@ -69,6 +69,9 @@ public class SecurityConfig {
                         .anyRequest()
                         .authenticated()
                 )
+                .exceptionHandling(ex -> ex
+                        .authenticationEntryPoint(jwtAuthenticationEntryPoint)
+                )
 
                 // JWT Filter
                 .addFilterBefore(
@@ -80,28 +83,16 @@ public class SecurityConfig {
     }
 
 
-	  @Bean
-	    public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig) throws Exception {
-	        return authConfig.getAuthenticationManager();
-	    }
-	  
-//	  @Bean
-//	  public CorsConfigurationSource corsConfigurationSource() {
-//	      CorsConfiguration configuration = new CorsConfiguration();
-//	      configuration.setAllowedOrigins(List.of("http://localhost:5173"));
-//	      configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-//	      configuration.setAllowedHeaders(List.of("*")); // Allow all headers
-//	      configuration.setAllowCredentials(true);
-//
-//	      UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-//	      source.registerCorsConfiguration("/**", configuration);
-//	      return source;
-//	  }
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig) throws Exception {
+        return authConfig.getAuthenticationManager();
+    }
+
 
     @Bean
-    public PasswordEncoder passwordEncoder(){
-          return new BCryptPasswordEncoder();
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
     }
-	  
-	 
+
+
 }

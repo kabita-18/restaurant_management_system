@@ -41,13 +41,9 @@ public class AuthController {
 
     @PostMapping("/verify-otp")
     public ResponseEntity<String> verifyOtp(@RequestBody VerifyOtpRequest request){
-        boolean isVerified =
-                otpService.verifyOtpAndActiveUser(request.email(),  request.otp());
-        if(!isVerified){
-            return ResponseEntity
-                    .status(HttpStatus.BAD_REQUEST)
-                    .body("Invalid OTP");
-        }
+
+        otpService.verifyOtpAndActiveUser(request.email(),  request.otp());
+
         return ResponseEntity.ok("OTP verified successfully");
     }
 
@@ -58,16 +54,14 @@ public class AuthController {
     }
 
 
-    @PostMapping
+    @PostMapping("/login")
     public ResponseEntity<LoginResponse> loginUser(
             @Valid @RequestBody LoginRequest request){
         logger.info("Login request received for email: {}", request.email());
 
         LoginResponse response = authService.login(request);
 
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(response);
+        return ResponseEntity.ok(response);
     }
 
 

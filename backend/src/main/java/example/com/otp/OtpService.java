@@ -5,5 +5,5 @@ public interface OtpService {
 
 //    boolean verifyOtp(String email, String otp);
 
-    boolean verifyOtpAndActiveUser(String email, String otp);
+    void verifyOtpAndActiveUser(String email, String otp);
 }
