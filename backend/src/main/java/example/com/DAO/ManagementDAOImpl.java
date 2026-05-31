@@ -280,7 +280,7 @@ public class ManagementDAOImpl implements ManagementDAO {
 		if (user == null) {
 			throw new BadCredentialsException("User not found");
 		}
-		
+
 		 BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 		   if (!encoder.matches(login.getPassword(), user.getPassword())) {
 		        throw new BadCredentialsException("Invalid password");

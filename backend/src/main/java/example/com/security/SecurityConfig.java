@@ -2,6 +2,8 @@ package example.com.security;
 
 import java.util.List;
 
+import example.com.JWT.JwtAuthenticationEntryPoint;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -11,6 +13,8 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.stereotype.Component;
@@ -24,39 +28,71 @@ import jakarta.servlet.http.HttpServletRequest;
 
 @Configuration
 @EnableMethodSecurity
+@AllArgsConstructor
 
 public class SecurityConfig {
-	  @Autowired
-	    private JWTFilter jwtFilter;
-	  @Autowired customCorsConfiguration customCorsConfig;
 
-	  
-	  @Bean
-	    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-	        http.csrf(AbstractHttpConfigurer::disable)
-            .authorizeHttpRequests(req -> req.anyRequest().permitAll())
-            .cors(c -> c.configurationSource(customCorsConfig.corsConfigurationSource()))
-            .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
-	        return http.build();
-	    }
-	  
-	  @Bean
-	    public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig) throws Exception {
-	        return authConfig.getAuthenticationManager();
-	    }
-	  
-//	  @Bean
-//	  public CorsConfigurationSource corsConfigurationSource() {
-//	      CorsConfiguration configuration = new CorsConfiguration();
-//	      configuration.setAllowedOrigins(List.of("http://localhost:5173"));
-//	      configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-//	      configuration.setAllowedHeaders(List.of("*")); // Allow all headers
-//	      configuration.setAllowCredentials(true);
-//
-//	      UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-//	      source.registerCorsConfiguration("/**", configuration);
-//	      return source;
-//	  }
-	  
-	 
+    private final JWTFilter jwtFilter;
+    private final customCorsConfiguration customCorsConfig;
+    private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
+
+
+    @Bean
+    public SecurityFilterChain filterChain(
+            HttpSecurity http
+    ) throws Exception {
+        http
+                .csrf(AbstractHttpConfigurer::disable)
+
+                .cors(cors -> cors.configurationSource(
+                        customCorsConfig.corsConfigurationSource()
+                ))
+
+                // Stateless JWT Authentication
+                .sessionManagement(session ->
+                        session.sessionCreationPolicy(
+                                SessionCreationPolicy.STATELESS
+                        )
+                )
+                .authorizeHttpRequests(auth -> auth
+                        // Public APIs
+                        .requestMatchers(
+                                "/deliciousbyte/auth/**"
+                        ).permitAll()
+
+                        // Admin APIs
+                        .requestMatchers(
+                                "/admin/**"
+                        ).hasRole("ADMIN")
+
+                        // All other APIs require authentication
+                        .anyRequest()
+                        .authenticated()
+                )
+                .exceptionHandling(ex -> ex
+                        .authenticationEntryPoint(jwtAuthenticationEntryPoint)
+                )
+
+                // JWT Filter
+                .addFilterBefore(
+                        jwtFilter,
+                        UsernamePasswordAuthenticationFilter.class
+                );
+
+        return http.build();
+    }
+
+
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig) throws Exception {
+        return authConfig.getAuthenticationManager();
+    }
+
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+
+
 }
